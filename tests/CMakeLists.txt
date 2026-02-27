@@ -11,7 +11,9 @@ function(llama_build source)
 
     add_executable(${TEST_TARGET} ${TEST_SOURCES})
     target_link_libraries(${TEST_TARGET} PRIVATE common)
-    install(TARGETS ${TEST_TARGET} RUNTIME)
+    if (LLAMA_TESTS_INSTALL)
+        install(TARGETS ${TEST_TARGET} RUNTIME)
+    endif()
 endfunction()
 
 function(llama_test target)
@@ -100,7 +102,9 @@ function(llama_build_and_test source)
     endif()
 
     add_executable(${TEST_TARGET} ${TEST_SOURCES})
-    install(TARGETS ${TEST_TARGET} RUNTIME)
+    if (LLAMA_TESTS_INSTALL)
+        install(TARGETS ${TEST_TARGET} RUNTIME)
+    endif()
     target_link_libraries(${TEST_TARGET} PRIVATE common)
 
     add_test(
@@ -148,7 +152,7 @@ if (NOT WIN32 OR NOT BUILD_SHARED_LIBS)
     llama_build_and_test(test-grammar-parser.cpp)
     llama_build_and_test(test-grammar-integration.cpp)
     llama_build_and_test(test-llama-grammar.cpp)
-    llama_build_and_test(test-chat.cpp)
+    llama_build_and_test(test-chat.cpp WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
     # TODO: disabled on loongarch64 because the ggml-ci node lacks Python 3.8
     if (NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "loongarch64")
         llama_build_and_test(test-json-schema-to-grammar.cpp   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
